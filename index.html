@@ -1,5 +1,199 @@
 <!DOCTYPE html>
-<html>
-<head><title>AgudeloAutos</title></head>
-<body><h1>Hola</h1></body>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgudeloAutos — Gestión</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
+.app{display:flex;min-height:100vh}
+.sidebar{width:210px;flex-shrink:0;background:#1a1a4a;display:flex;flex-direction:column}
+.logo{padding:1.2rem 1rem;border-bottom:1px solid #2d2d6b}
+.logo-title{font-size:16px;font-weight:700;color:#fff}
+.logo-sub{font-size:11px;color:#9999cc;margin-top:2px}
+.nav-section{font-size:10px;color:#6666aa;padding:12px 1rem 4px;text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 1rem;cursor:pointer;font-size:13px;color:#aaaadd;border-left:3px solid transparent}
+.nav-item:hover{background:#2d2d6b;color:#fff}
+.nav-item.active{background:#2d2d6b;color:#fff;border-left:3px solid #7c72f0;font-weight:600}
+.main{flex:1;overflow-y:auto;padding:1.5rem}
+.page{display:none}.page.active{display:block}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem}
+.page-title{font-size:20px;font-weight:700;color:#1a1a4a}
+.btn{padding:8px 16px;border-radius:8px;border:1px solid #ccc;background:#fff;font-size:13px;cursor:pointer;color:#333;display:inline-flex;align-items:center;gap:6px;font-family:Arial,sans-serif}
+.btn:hover{background:#f0f0f0}
+.btn-primary{background:#2d2d6b;color:#fff;border-color:#1a1a4a}
+.btn-primary:hover{background:#1a1a4a}
+.btn-danger{background:#fff0f0;color:#a32d2d;border-color:#f0c0c0}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.4rem}
+.metric{background:#fff;border-radius:10px;padding:1rem 1.1rem;border:1px solid #e8e8e8}
+.metric-label{font-size:12px;color:#888;margin-bottom:5px}
+.metric-value{font-size:24px;font-weight:700;color:#1a1a4a}
+.metric-sub{font-size:11px;color:#aaa;margin-top:2px}
+.card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.2rem;margin-bottom:1rem}
+.card-title{font-size:14px;font-weight:700;color:#1a1a4a;margin-bottom:1rem}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:9px 10px;font-size:11px;color:#888;font-weight:600;border-bottom:1px solid #eee;background:#fafafa}
+td{padding:10px;border-bottom:1px solid #f0f0f0;color:#333;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f9f9ff}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-green{background:#e8f8f0;color:#1d7a45}
+.badge-amber{background:#fff8e8;color:#8a5a00}
+.badge-red{background:#fff0f0;color:#a32d2d}
+.badge-blue{background:#e8f0ff;color:#1a3a8a}
+.badge-purple{background:#f0eeff;color:#4a2d8a}
+.badge-gray{background:#f0f0f0;color:#666}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:12px;color:#666;font-weight:600}
+.form-group input,.form-group select,.form-group textarea{font-size:13px;border-radius:7px;border:1px solid #ddd;padding:8px 10px;font-family:Arial,sans-serif;color:#333}
+.form-group textarea{resize:vertical;min-height:70px}
+.tab-bar{display:flex;margin-bottom:1rem;border-bottom:1px solid #eee}
+.tab{padding:8px 16px;font-size:13px;cursor:pointer;color:#888;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.active{color:#2d2d6b;border-bottom:2px solid #7c72f0;font-weight:600}
+.tl-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f5f5f5;align-items:flex-start}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:#7c72f0;margin-top:3px;flex-shrink:0}
+.tl-dot.red{background:#e24b4a}.tl-dot.amber{background:#ef9f27}
+.tl-date{font-size:11px;color:#aaa;min-width:75px}
+.tl-text{font-size:13px;color:#333;font-weight:500}
+.tl-sub{font-size:11px;color:#999;margin-top:1px}
+.search-bar{display:flex;gap:8px;margin-bottom:1rem}
+.search-bar input{flex:1;font-size:13px;border-radius:8px;border:1px solid #ddd;padding:8px 12px;font-family:Arial,sans-serif}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:1.4rem;width:540px;max-width:95vw;box-shadow:0 8px 40px rgba(0,0,0,.18);max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem}
+.modal-title{font-size:16px;font-weight:700;color:#1a1a4a}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:1.2rem;padding-top:1rem;border-top:1px solid #f0f0f0}
+.info-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f5f5f5;font-size:13px}
+.info-row:last-child{border-bottom:none}
+.info-label{color:#888}.info-value{color:#222;font-weight:600}
+.alerta-box{background:#fff8e8;border:1px solid #f5d78a;border-radius:8px;padding:10px 14px;font-size:12px;color:#7a5000;margin-top:1rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.empty{text-align:center;padding:2rem;color:#aaa;font-size:13px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+  <div class="logo"><div class="logo-title">AgudeloAutos</div><div class="logo-sub">Panel de gestión</div></div>
+  <div class="nav-section">General</div>
+  <div class="nav-item active" onclick="showPage('dashboard',this)">&#9632; Inicio</div>
+  <div class="nav-item" onclick="showPage('flota',this)">&#9632; Flota</div>
+  <div class="nav-section">Actividad</div>
+  <div class="nav-item" onclick="showPage('alquileres',this)">&#9632; Alquileres</div>
+  <div class="nav-item" onclick="showPage('subarriendo',this)">&#9632; Subarriendo</div>
+  <div class="nav-item" onclick="showPage('compraventa',this)">&#9632; Compraventa</div>
+  <div class="nav-item" onclick="showPage('importaciones',this)">&#9632; Importaciones</div>
+  <div class="nav-section">Gestión</div>
+  <div class="nav-item" onclick="showPage('contratos',this)">&#9632; Contratos</div>
+  <div class="nav-item" onclick="showPage('seguros',this)">&#9632; Seguros</div>
+  <div class="nav-item" onclick="showPage('clientes',this)">&#9632; Clientes</div>
+</div>
+<div class="main">
+<div class="page active" id="page-dashboard">
+  <div class="page-header"><div class="page-title">Bienvenido, AgudeloAutos</div><div style="font-size:12px;color:#aaa">2026</div></div>
+  <div class="metrics">
+    <div class="metric"><div class="metric-label">Vehículos</div><div class="metric-value" id="m-vehiculos">0</div><div class="metric-sub">en flota</div></div>
+    <div class="metric"><div class="metric-label">Alquileres activos</div><div class="metric-value" id="m-alquileres">0</div><div class="metric-sub">en curso</div></div>
+    <div class="metric"><div class="metric-label">Ingresos cobrados</div><div class="metric-value" id="m-ingresos">0€</div><div class="metric-sub">alquileres</div></div>
+    <div class="metric"><div class="metric-label">Alertas</div><div class="metric-value" id="m-alertas" style="color:#e24b4a">0</div><div class="metric-sub">requieren atención</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div class="card-title">Próximas devoluciones</div><div id="proximas-dev"><div class="empty">No hay alquileres activos</div></div></div>
+    <div class="card"><div class="card-title">Alertas de flota</div><div id="alertas-flota"><div class="empty">Todo en orden</div></div></div>
+  </div>
+</div>
+<div class="page" id="page-flota">
+  <div class="page-header"><div class="page-title">Flota de vehículos</div><button class="btn btn-primary" onclick="openModal('modal-vehiculo')">+ Añadir vehículo</button></div>
+  <div class="search-bar"><input type="text" id="buscar-flota" placeholder="Buscar matrícula, marca..." oninput="renderFlota()"><select id="filtro-estado" class="btn" onchange="renderFlota()"><option value="">Todos</option><option>Disponible</option><option>Alquilado</option><option>Mantenimiento</option></select></div>
+  <div class="card" style="padding:0"><table><thead><tr><th>Vehículo</th><th>Matrícula</th><th>Tipo</th><th>Km</th><th>ITV vence</th><th>Estado</th><th></th></tr></thead><tbody id="tabla-flota"><tr><td colspan="7" class="empty">Añade tu primer vehículo.</td></tr></tbody></table></div>
+</div>
+<div class="page" id="page-alquileres">
+  <div class="page-header"><div class="page-title">Alquileres</div><button class="btn btn-primary" onclick="openModal('modal-alquiler')">+ Nueva reserva</button></div>
+  <div class="tab-bar"><div class="tab active" onclick="filtroAlq='activo';this.parentNode.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));this.classList.add('active');renderAlquileres()">Activos</div><div class="tab" onclick="filtroAlq='hist';this.parentNode.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));this.classList.add('active');renderAlquileres()">Historial</div></div>
+  <div class="card" style="padding:0"><table><thead><tr><th>Cliente</th><th>Vehículo</th><th>Desde</th><th>Hasta</th><th>Total</th><th>Pago</th><th></th></tr></thead><tbody id="tabla-alquileres"><tr><td colspan="7" class="empty">No hay alquileres.</td></tr></tbody></table></div>
+</div>
+<div class="page" id="page-subarriendo">
+  <div class="page-header"><div class="page-title">Subarriendo</div><button class="btn btn-primary" onclick="openModal('modal-subarriendo')">+ Nuevo</button></div>
+  <div class="card" style="padding:0"><table><thead><tr><th>Propietario</th><th>Vehículo</th><th>Coste/mes</th><th>Ingreso</th><th>Margen</th><th>Hasta</th><th></th></tr></thead><tbody id="tabla-sub"><tr><td colspan="7" class="empty">No hay subarriendos.</td></tr></tbody></table></div>
+</div>
+<div class="page" id="page-compraventa">
+  <div class="page-header"><div class="page-title">Compraventa</div><button class="btn btn-primary" onclick="openModal('modal-cv')">+ Nueva operación</button></div>
+  <div class="card" style="padding:0"><table><thead><tr><th>Vehículo</th><th>Tipo</th><th>Compra</th><th>Venta</th><th>Beneficio</th><th>Estado</th><th></th></tr></thead><tbody id="tabla-cv"><tr><td colspan="7" class="empty">No hay operaciones.</td></tr></tbody></table></div>
+</div>
+<div class="page" id="page-importaciones">
+  <div class="page-header"><div class="page-title">Importaciones</div><button class="btn btn-primary" onclick="openModal('modal-imp')">+ Nueva importación</button></div>
+  <div class="card" style="padding:0"><table><thead><tr><th>Vehículo</th><th>País</th><th>Coste total</th><th>Precio venta</th><th>Beneficio</th><th>Estado</th><th></th></tr></thead><tbody id="tabla-imp"><tr><td colspan="7" class="empty">No hay importaciones.</td></tr></tbody></table></div>
+</div>
+<div class="page" id="page-contratos">
+  <div class="page-header"><div class="page-title">Contratos</div></div>
+  <div class="card" style="padding:0"><table><thead><tr><th>Tipo</th><th>Parte</th><th>Vehículo</th><th>Inicio</th><th>Fin</th><th>Importe</th><th>Estado</th></tr></thead><tbody id="tabla-contratos"><tr><td colspan="7" class="empty">Aparecen automáticamente.</td></tr></tbody></table></div>
+</div>
+<div class="page" id="page-seguros">
+  <div class="page-header"><div class="page-title">Seguros — Guía legal</div></div>
+  <div class="grid2">
+    <div class="card"><div class="card-title">Lo que necesitas obligatoriamente</div>
+      <div class="info-row"><span class="info-label">RC obligatoria circulación</span><span class="badge badge-red">Obligatorio</span></div>
+      <div class="info-row"><span class="info-label">Todo riesgo con franquicia</span><span class="badge badge-amber">Muy recomendado</span></div>
+      <div class="info-row"><span class="info-label">Apropiación indebida</span><span class="badge badge-amber">Muy recomendado</span></div>
+      <div class="info-row"><span class="info-label">RC General de la actividad</span><span class="badge badge-blue">Recomendado</span></div>
+      <div class="info-row"><span class="info-label">Asistencia en viaje 24h</span><span class="badge badge-gray">Opcional</span></div>
+    </div>
+    <div class="card"><div class="card-title">Contactos recomendados</div>
+      <div class="info-row"><span class="info-label">Flota alquiler (AXA Valencia)</span><span class="info-value">segurotaller.com</span></div>
+      <div class="info-row"><span class="info-label">RC General actividad</span><span class="info-value">aseguratunegocio.com</span></div>
+      <div class="alerta-box">Los vehículos de subarriendo también deben estar cubiertos bajo tu póliza.</div>
+    </div>
+  </div>
+</div>
+<div class="page" id="page-clientes">
+  <div class="page-header"><div class="page-title">Clientes</div><button class="btn btn-primary" onclick="openModal('modal-cliente')">+ Nuevo cliente</button></div>
+  <div class="card" style="padding:0"><table><thead><tr><th>Nombre</th><th>DNI/NIE</th><th>Teléfono</th><th>Email</th><th>Alquileres</th><th></th></tr></thead><tbody id="tabla-clientes"><tr><td colspan="6" class="empty">No hay clientes.</td></tr></tbody></table></div>
+</div>
+</div>
+</div>
+<div class="modal-overlay" id="modal-vehiculo"><div class="modal"><div class="modal-header"><div class="modal-title">Añadir vehículo</div><button class="btn" onclick="closeModal('modal-vehiculo')" style="padding:4px 10px">✕</button></div><div class="form-grid"><div class="form-group"><label>Marca</label><input id="v-marca" type="text"></div><div class="form-group"><label>Modelo</label><input id="v-modelo" type="text"></div><div class="form-group"><label>Matrícula</label><input id="v-mat" type="text"></div><div class="form-group"><label>Año</label><input id="v-anio" type="number"></div><div class="form-group"><label>Km</label><input id="v-km" type="number"></div><div class="form-group"><label>Tipo</label><select id="v-tipo"><option>Propio</option><option>Subarriendo</option></select></div><div class="form-group"><label>Estado</label><select id="v-est"><option>Disponible</option><option>Alquilado</option><option>Mantenimiento</option></select></div><div class="form-group"><label>ITV vence</label><input id="v-itv" type="date"></div><div class="form-group"><label>Seguro vence</label><input id="v-seg" type="date"></div><div class="form-group"><label>Precio compra (€)</label><input id="v-precio" type="number"></div><div class="form-group" style="grid-column:1/-1"><label>Notas</label><textarea id="v-notas"></textarea></div></div><div class="modal-footer"><button class="btn" onclick="closeModal('modal-vehiculo')">Cancelar</button><button class="btn btn-primary" onclick="guardarVehiculo()">Guardar</button></div></div></div>
+<div class="modal-overlay" id="modal-alquiler"><div class="modal"><div class="modal-header"><div class="modal-title">Nueva reserva</div><button class="btn" onclick="closeModal('modal-alquiler')" style="padding:4px 10px">✕</button></div><div class="form-grid"><div class="form-group"><label>Cliente</label><input id="a-cli" type="text"></div><div class="form-group"><label>DNI/NIE</label><input id="a-dni" type="text"></div><div class="form-group"><label>Teléfono</label><input id="a-tel" type="tel"></div><div class="form-group"><label>Email</label><input id="a-email" type="email"></div><div class="form-group"><label>Vehículo</label><select id="a-veh"></select></div><div class="form-group"><label>Tarifa/día (€)</label><input id="a-tar" type="number"></div><div class="form-group"><label>Fecha entrega</label><input id="a-desde" type="date"></div><div class="form-group"><label>Fecha devolución</label><input id="a-hasta" type="date"></div><div class="form-group"><label>Depósito (€)</label><input id="a-dep" type="number"></div><div class="form-group"><label>Estado pago</label><select id="a-pago"><option>Pendiente</option><option>Cobrado</option><option>Parcial</option></select></div><div class="form-group" style="grid-column:1/-1"><label>Notas</label><textarea id="a-notas"></textarea></div></div><div class="modal-footer"><button class="btn" onclick="closeModal('modal-alquiler')">Cancelar</button><button class="btn btn-primary" onclick="guardarAlquiler()">Guardar</button></div></div></div>
+<div class="modal-overlay" id="modal-subarriendo"><div class="modal"><div class="modal-header"><div class="modal-title">Nuevo subarriendo</div><button class="btn" onclick="closeModal('modal-subarriendo')" style="padding:4px 10px">✕</button></div><div class="form-grid"><div class="form-group"><label>Propietario</label><input id="s-prop" type="text"></div><div class="form-group"><label>Contacto</label><input id="s-cont" type="text"></div><div class="form-group"><label>Vehículo</label><input id="s-veh" type="text"></div><div class="form-group"><label>Matrícula</label><input id="s-mat" type="text"></div><div class="form-group"><label>Coste mensual (€)</label><input id="s-coste" type="number"></div><div class="form-group"><label>Ingreso generado (€)</label><input id="s-ing" type="number"></div><div class="form-group"><label>Desde</label><input id="s-desde" type="date"></div><div class="form-group"><label>Hasta</label><input id="s-hasta" type="date"></div><div class="form-group" style="grid-column:1/-1"><label>Notas</label><textarea id="s-notas"></textarea></div></div><div class="modal-footer"><button class="btn" onclick="closeModal('modal-subarriendo')">Cancelar</button><button class="btn btn-primary" onclick="guardarSub()">Guardar</button></div></div></div>
+<div class="modal-overlay" id="modal-cv"><div class="modal"><div class="modal-header"><div class="modal-title">Nueva compraventa</div><button class="btn" onclick="closeModal('modal-cv')" style="padding:4px 10px">✕</button></div><div class="form-grid"><div class="form-group"><label>Vehículo</label><input id="c-veh" type="text"></div><div class="form-group"><label>Matrícula</label><input id="c-mat" type="text"></div><div class="form-group"><label>Tipo</label><select id="c-tipo"><option>Compraventa propia</option><option>Gestión de venta</option></select></div><div class="form-group"><label>Vendedor/Origen</label><input id="c-vend" type="text"></div><div class="form-group"><label>Precio compra (€)</label><input id="c-compra" type="number" placeholder="0"></div><div class="form-group"><label>Gastos (€)</label><input id="c-gastos" type="number" placeholder="0"></div><div class="form-group"><label>Precio venta (€)</label><input id="c-venta" type="number" placeholder="0"></div><div class="form-group"><label>Estado</label><select id="c-est"><option>En venta</option><option>Vendido</option></select></div><div class="form-group" style="grid-column:1/-1"><label>Notas</label><textarea id="c-notas"></textarea></div></div><div class="modal-footer"><button class="btn" onclick="closeModal('modal-cv')">Cancelar</button><button class="btn btn-primary" onclick="guardarCV()">Guardar</button></div></div></div>
+<div class="modal-overlay" id="modal-imp"><div class="modal"><div class="modal-header"><div class="modal-title">Nueva importación</div><button class="btn" onclick="closeModal('modal-imp')" style="padding:4px 10px">✕</button></div><div class="form-grid"><div class="form-group"><label>Vehículo</label><input id="i-veh" type="text"></div><div class="form-group"><label>País origen</label><input id="i-pais" type="text"></div><div class="form-group"><label>Precio origen (€)</label><input id="i-precio" type="number"></div><div class="form-group"><label>Transporte (€)</label><input id="i-trans" type="number" placeholder="0"></div><div class="form-group"><label>Aranceles/IVA (€)</label><input id="i-aran" type="number" placeholder="0"></div><div class="form-group"><label>Homologación (€)</label><input id="i-homo" type="number" placeholder="0"></div><div class="form-group"><label>Precio venta estimado (€)</label><input id="i-venta" type="number"></div><div class="form-group"><label>Estado</label><select id="i-est"><option>En tránsito</option><option>Homologando</option><option>Disponible</option><option>Vendido</option></select></div><div class="form-group" style="grid-column:1/-1"><label>Notas</label><textarea id="i-notas"></textarea></div></div><div class="modal-footer"><button class="btn" onclick="closeModal('modal-imp')">Cancelar</button><button class="btn btn-primary" onclick="guardarImp()">Guardar</button></div></div></div>
+<div class="modal-overlay" id="modal-cliente"><div class="modal"><div class="modal-header"><div class="modal-title">Nuevo cliente</div><button class="btn" onclick="closeModal('modal-cliente')" style="padding:4px 10px">✕</button></div><div class="form-grid"><div class="form-group"><label>Nombre completo</label><input id="cl-nom" type="text"></div><div class="form-group"><label>DNI/NIE</label><input id="cl-dni" type="text"></div><div class="form-group"><label>Teléfono</label><input id="cl-tel" type="tel"></div><div class="form-group"><label>Email</label><input id="cl-email" type="email"></div><div class="form-group"><label>Dirección</label><input id="cl-dir" type="text"></div><div class="form-group"><label>Carnet vence</label><input id="cl-car" type="date"></div><div class="form-group" style="grid-column:1/-1"><label>Notas</label><textarea id="cl-notas"></textarea></div></div><div class="modal-footer"><button class="btn" onclick="closeModal('modal-cliente')">Cancelar</button><button class="btn btn-primary" onclick="guardarCliente()">Guardar</button></div></div></div>
+<script>
+let db={vehiculos:[],alquileres:[],subarriendos:[],compraventas:[],importaciones:[],clientes:[]};
+let filtroAlq='activo';
+function load(){const s=localStorage.getItem('agudelodb');if(s)db=JSON.parse(s);}
+function save(){localStorage.setItem('agudelodb',JSON.stringify(db));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).substr(2,5);}
+function showPage(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');el.classList.add('active');({dashboard:actualizarDashboard,flota:renderFlota,alquileres:renderAlquileres,subarriendo:renderSub,compraventa:renderCV,importaciones:renderImp,contratos:renderContratos,clientes:renderClientes}[id]||function(){})();}
+function openModal(id){if(id==='modal-alquiler'){const s=document.getElementById('a-veh');const d=db.vehiculos.filter(v=>v.estado==='Disponible');s.innerHTML=d.length?d.map(v=>'<option value="'+v.id+'">'+v.marca+' '+v.modelo+' · '+v.mat+'</option>').join(''):'<option>No hay vehículos disponibles</option>';}document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+function badge(t){const m={'Disponible':'green','Cobrado':'green','Vendido':'green','Activo':'green','Alquilado':'amber','Pendiente':'amber','En venta':'amber','En tránsito':'amber','Homologando':'amber','Parcial':'amber','Mantenimiento':'red','Propio':'blue','Compraventa propia':'blue','Subarriendo':'purple','Gestión de venta':'purple'};return'<span class="badge badge-'+(m[t]||'gray')+'">'+t+'</span>';}
+function fmt(n){return Number(n).toLocaleString('es-ES')+'€';}
+function del(arr,id){return arr.filter(x=>x.id!==id);}
+function actualizarDashboard(){document.getElementById('m-vehiculos').textContent=db.vehiculos.length;const hoy=new Date();const act=db.alquileres.filter(a=>!a.hasta||new Date(a.hasta)>=hoy);document.getElementById('m-alquileres').textContent=act.length;const ing=db.alquileres.filter(a=>a.pago==='Cobrado').reduce((s,a)=>s+Number(a.total||0),0);document.getElementById('m-ingresos').textContent=fmt(ing);const en15=new Date();en15.setDate(hoy.getDate()+15);let al=0,ha='';db.vehiculos.forEach(v=>{if(v.itv){const d=new Date(v.itv);if(d<hoy){al++;ha+='<div class="tl-item"><div class="tl-dot red"></div><div><div class="tl-text">'+v.marca+' '+v.modelo+' · ITV vencida</div></div></div>';}else if(d<en15){al++;ha+='<div class="tl-item"><div class="tl-dot amber"></div><div><div class="tl-text">'+v.marca+' · ITV próxima</div></div></div>';}}if(v.seg){const d=new Date(v.seg);if(d<hoy){al++;ha+='<div class="tl-item"><div class="tl-dot red"></div><div><div class="tl-text">'+v.marca+' '+v.modelo+' · Seguro vencido</div></div></div>';}else if(d<en15){al++;ha+='<div class="tl-item"><div class="tl-dot amber"></div><div><div class="tl-text">'+v.marca+' · Seguro próximo</div></div></div>';}}});document.getElementById('m-alertas').textContent=al;document.getElementById('alertas-flota').innerHTML=ha||'<div class="empty">Todo en orden ✓</div>';const prox=db.alquileres.filter(a=>a.hasta&&new Date(a.hasta)>=hoy).sort((a,b)=>new Date(a.hasta)-new Date(b.hasta)).slice(0,4);document.getElementById('proximas-dev').innerHTML=prox.length?prox.map(a=>'<div class="tl-item"><div class="tl-dot"></div><div><div class="tl-date">'+a.hasta+'</div><div class="tl-text">'+a.cli+'</div></div></div>').join(''):'<div class="empty">No hay alquileres activos</div>';}
+function guardarVehiculo(){const v={id:uid(),marca:document.getElementById('v-marca').value,modelo:document.getElementById('v-modelo').value,mat:document.getElementById('v-mat').value,anio:document.getElementById('v-anio').value,km:document.getElementById('v-km').value,tipo:document.getElementById('v-tipo').value,estado:document.getElementById('v-est').value,itv:document.getElementById('v-itv').value,seg:document.getElementById('v-seg').value,precio:document.getElementById('v-precio').value,notas:document.getElementById('v-notas').value};if(!v.marca||!v.mat){alert('Introduce marca y matrícula');return;}db.vehiculos.push(v);save();closeModal('modal-vehiculo');['v-marca','v-modelo','v-mat','v-anio','v-km','v-itv','v-seg','v-precio','v-notas'].forEach(i=>document.getElementById(i).value='');renderFlota();}
+function renderFlota(){const b=(document.getElementById('buscar-flota')||{value:''}).value.toLowerCase();const f=(document.getElementById('filtro-estado')||{value:''}).value;const lista=db.vehiculos.filter(v=>(!b||(v.marca+v.modelo+v.mat).toLowerCase().includes(b))&&(!f||v.estado===f));const tb=document.getElementById('tabla-flota');tb.innerHTML=lista.length?lista.map(v=>'<tr><td><strong>'+v.marca+' '+v.modelo+'</strong> <span style="color:#aaa;font-size:11px">'+v.anio+'</span></td><td>'+v.mat+'</td><td>'+badge(v.tipo)+'</td><td>'+Number(v.km).toLocaleString('es-ES')+' km</td><td style="'+(v.itv&&new Date(v.itv)<new Date()?'color:#a32d2d;font-weight:600':'')+'">'+(v.itv||'—')+'</td><td>'+badge(v.estado)+'</td><td><button class="btn btn-danger" onclick="elimV(\''+v.id+'\')" style="padding:3px 8px;font-size:11px">Eliminar</button></td></tr>').join(''):'<tr><td colspan="7" class="empty">No hay vehículos.</td></tr>';}
+function elimV(id){if(!confirm('¿Eliminar?'))return;db.vehiculos=del(db.vehiculos,id);save();renderFlota();}
+function guardarAlquiler(){const vid=document.getElementById('a-veh').value;const v=db.vehiculos.find(x=>x.id===vid);const desde=document.getElementById('a-desde').value,hasta=document.getElementById('a-hasta').value;const tar=Number(document.getElementById('a-tar').value)||0;const dias=desde&&hasta?Math.max(1,Math.round((new Date(hasta)-new Date(desde))/(864e5))):0;const a={id:uid(),cli:document.getElementById('a-cli').value,dni:document.getElementById('a-dni').value,tel:document.getElementById('a-tel').value,email:document.getElementById('a-email').value,vid,vlabel:v?v.marca+' '+v.modelo+' · '+v.mat:'',tar,dias,total:tar*dias,dep:document.getElementById('a-dep').value,desde,hasta,pago:document.getElementById('a-pago').value,notas:document.getElementById('a-notas').value};if(!a.cli){alert('Introduce el cliente');return;}db.alquileres.push(a);if(v)v.estado='Alquilado';save();closeModal('modal-alquiler');renderAlquileres();}
+function renderAlquileres(){const hoy=new Date();const lista=filtroAlq==='activo'?db.alquileres.filter(a=>!a.hasta||new Date(a.hasta)>=hoy):db.alquileres.filter(a=>a.hasta&&new Date(a.hasta)<hoy);const tb=document.getElementById('tabla-alquileres');tb.innerHTML=lista.length?lista.map(a=>'<tr><td><strong>'+a.cli+'</strong><br><span style="color:#aaa;font-size:11px">'+a.tel+'</span></td><td>'+(a.vlabel||'—')+'</td><td>'+(a.desde||'—')+'</td><td>'+(a.hasta||'—')+'</td><td><strong>'+fmt(a.total)+'</strong></td><td>'+badge(a.pago)+'</td><td><button class="btn btn-danger" onclick="elimA(\''+a.id+'\')" style="padding:3px 8px;font-size:11px">Eliminar</button></td></tr>').join(''):'<tr><td colspan="7" class="empty">No hay registros.</td></tr>';}
+function elimA(id){if(!confirm('¿Eliminar?'))return;db.alquileres=del(db.alquileres,id);save();renderAlquileres();}
+function guardarSub(){const s={id:uid(),prop:document.getElementById('s-prop').value,cont:document.getElementById('s-cont').value,veh:document.getElementById('s-veh').value,mat:document.getElementById('s-mat').value,coste:Number(document.getElementById('s-coste').value)||0,ing:Number(document.getElementById('s-ing').value)||0,desde:document.getElementById('s-desde').value,hasta:document.getElementById('s-hasta').value,notas:document.getElementById('s-notas').value};if(!s.prop){alert('Introduce el propietario');return;}db.subarriendos.push(s);save();closeModal('modal-subarriendo');renderSub();}
+function renderSub(){const tb=document.getElementById('tabla-sub');tb.innerHTML=db.subarriendos.length?db.subarriendos.map(s=>{const m=s.ing-s.coste;return'<tr><td><strong>'+s.prop+'</strong></td><td>'+s.veh+' · '+s.mat+'</td><td>'+fmt(s.coste)+'</td><td>'+fmt(s.ing)+'</td><td style="color:'+(m>=0?'#1d7a45':'#a32d2d')+';font-weight:600">'+(m>=0?'+':'')+fmt(m)+'</td><td>'+(s.hasta||'—')+'</td><td><button class="btn btn-danger" onclick="elimS(\''+s.id+'\')" style="padding:3px 8px;font-size:11px">Eliminar</button></td></tr>';}).join(''):'<tr><td colspan="7" class="empty">No hay subarriendos.</td></tr>';}
+function elimS(id){if(!confirm('¿Eliminar?'))return;db.subarriendos=del(db.subarriendos,id);save();renderSub();}
+function guardarCV(){const compra=Number(document.getElementById('c-compra').value)||0,gastos=Number(document.getElementById('c-gastos').value)||0,venta=Number(document.getElementById('c-venta').value)||0,tipo=document.getElementById('c-tipo').value;const ben=tipo==='Gestión de venta'?venta*0.05:venta-compra-gastos;const c={id:uid(),veh:document.getElementById('c-veh').value,mat:document.getElementById('c-mat').value,tipo,vend:document.getElementById('c-vend').value,compra,gastos,venta,ben,estado:document.getElementById('c-est').value,notas:document.getElementById('c-notas').value};if(!c.veh){alert('Introduce el vehículo');return;}db.compraventas.push(c);save();closeModal('modal-cv');renderCV();}
+function renderCV(){const tb=document.getElementById('tabla-cv');tb.innerHTML=db.compraventas.length?db.compraventas.map(c=>'<tr><td><strong>'+c.veh+'</strong></td><td>'+badge(c.tipo)+'</td><td>'+(c.compra?fmt(c.compra):'—')+'</td><td>'+(c.venta?fmt(c.venta):'—')+'</td><td style="color:'+(c.ben>=0?'#1d7a45':'#a32d2d')+';font-weight:600">'+(c.ben>=0?'+':'')+fmt(c.ben)+'</td><td>'+badge(c.estado)+'</td><td><button class="btn btn-danger" onclick="elimCV(\''+c.id+'\')" style="padding:3px 8px;font-size:11px">Eliminar</button></td></tr>').join(''):'<tr><td colspan="7" class="empty">No hay operaciones.</td></tr>';}
+function elimCV(id){if(!confirm('¿Eliminar?'))return;db.compraventas=del(db.compraventas,id);save();renderCV();}
+function guardarImp(){const p=Number(document.getElementById('i-precio').value)||0,t=Number(document.getElementById('i-trans').value)||0,a=Number(document.getElementById('i-aran').value)||0,h=Number(document.getElementById('i-homo').value)||0,v=Number(document.getElementById('i-venta').value)||0;const ct=p+t+a+h;const i={id:uid(),veh:document.getElementById('i-veh').value,pais:document.getElementById('i-pais').value,precio:p,trans:t,aran:a,homo:h,ct,venta:v,ben:v-ct,estado:document.getElementById('i-est').value,notas:document.getElementById('i-notas').value};if(!i.veh){alert('Introduce el vehículo');return;}db.importaciones.push(i);save();closeModal('modal-imp');renderImp();}
+function renderImp(){const tb=document.getElementById('tabla-imp');tb.innerHTML=db.importaciones.length?db.importaciones.map(i=>'<tr><td><strong>'+i.veh+'</strong></td><td>'+i.pais+'</td><td>'+fmt(i.ct)+'</td><td>'+(i.venta?fmt(i.venta):'—')+'</td><td style="color:'+(i.ben>=0?'#1d7a45':'#a32d2d')+';font-weight:600">'+(i.ben>=0?'+':'')+fmt(i.ben)+'</td><td>'+badge(i.estado)+'</td><td><button class="btn btn-danger" onclick="elimImp(\''+i.id+'\')" style="padding:3px 8px;font-size:11px">Eliminar</button></td></tr>').join(''):'<tr><td colspan="7" class="empty">No hay importaciones.</td></tr>';}
+function elimImp(id){if(!confirm('¿Eliminar?'))return;db.importaciones=del(db.importaciones,id);save();renderImp();}
+function renderContratos(){const tb=document.getElementById('tabla-contratos');let rows=[];db.alquileres.forEach(a=>rows.push({tipo:'Alquiler',parte:a.cli,veh:a.vlabel||'',ini:a.desde,fin:a.hasta,imp:a.total,est:a.pago}));db.subarriendos.forEach(s=>rows.push({tipo:'Subarriendo',parte:s.prop,veh:s.veh+' '+s.mat,ini:s.desde,fin:s.hasta,imp:s.coste,est:'Activo'}));db.compraventas.forEach(c=>rows.push({tipo:'Compraventa',parte:c.vend||'—',veh:c.veh,ini:'—',fin:'—',imp:c.venta,est:c.estado}));tb.innerHTML=rows.length?rows.map(r=>'<tr><td>'+badge(r.tipo)+'</td><td>'+r.parte+'</td><td>'+r.veh+'</td><td>'+(r.ini||'—')+'</td><td>'+(r.fin||'—')+'</td><td>'+(r.imp?fmt(r.imp):'—')+'</td><td>'+badge(r.est)+'</td></tr>').join(''):'<tr><td colspan="7" class="empty">Aparecen automáticamente.</td></tr>';}
+function guardarCliente(){const cl={id:uid(),nom:document.getElementById('cl-nom').value,dni:document.getElementById('cl-dni').value,tel:document.getElementById('cl-tel').value,email:document.getElementById('cl-email').value,dir:document.getElementById('cl-dir').value,car:document.getElementById('cl-car').value,notas:document.getElementById('cl-notas').value};if(!cl.nom){alert('Introduce el nombre');return;}db.clientes.push(cl);save();closeModal('modal-cliente');renderClientes();}
+function renderClientes(){const tb=document.getElementById('tabla-clientes');tb.innerHTML=db.clientes.length?db.clientes.map(cl=>{const n=db.alquileres.filter(a=>a.cli===cl.nom).length;return'<tr><td><strong>'+cl.nom+'</strong></td><td>'+(cl.dni||'—')+'</td><td>'+(cl.tel||'—')+'</td><td>'+(cl.email||'—')+'</td><td>'+n+'</td><td><button class="btn btn-danger" onclick="elimCl(\''+cl.id+'\')" style="padding:3px 8px;font-size:11px">Eliminar</button></td></tr>';}).join(''):'<tr><td colspan="6" class="empty">No hay clientes.</td></tr>';}
+function elimCl(id){if(!confirm('¿Eliminar cliente?'))return;db.clientes=del(db.clientes,id);save();renderClientes();}
+load();actualizarDashboard();
+</script>
+</body>
 </html>
